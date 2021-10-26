@@ -9,17 +9,9 @@ Suicide prevention is a multi-sector issue.  It involves health care professiona
 ------------------------------------------------------------------------
 ## Data
 Dataset was taken from Kaggle which was pulled from the World Bank, World Health Organization (WHO).
+- Time period = 1985-2016
 
 <files, location, description>
-
-## 'WSB Analysis.ipynb' (main directory)
-main code where all the analysis was done and charts were built
-## 'Data Cleaning.ipynb' (WSB Data - subdirectory)
-main code for cleaning the WSB data files
-## 'Data Scraping Yahoo Finance Historical Stock Data.ipynb' (main directory)
-main code for pulling data from Yahoo Finance
-
-------------------------------------------------------------------------
 *** DESCRIPTION OF '.csv' FILES ***
 ## ex:'20201228-stonks.csv' & 'combined.csv' & 'WSB.csv' in 'WSB Data' sub-directory
 
@@ -39,5 +31,14 @@ main code for pulling data from Yahoo Finance
 •	price_change_net: The change in price of the stock as a dollar amount from the previous market open to the previous market close.
 •	price_change_pct: The change in price of the stock as a percentage from the previous market open to the previous market close.
 •	time_of_price: The time at which this price was reported on Yahoo Finance.
+------------------------------------------------------------------------
+## Coding Files
+- Done in R
+- Shiny App
 
-Merged all these files and cleaned as 'WSB.csv'  This was the main data file used for the WallStreetBets' portion. (obtained these from Alex)
+#### 'WSB Analysis.ipynb' (main directory)
+main code where all the analysis was done and charts were built
+#### 'Data Cleaning.ipynb' (WSB Data - subdirectory)
+main code for cleaning the WSB data files
+#### 'Data Scraping Yahoo Finance Historical Stock Data.ipynb' (main directory)
+main code for pulling data from Yahoo Finance
