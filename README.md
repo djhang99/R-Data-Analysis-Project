@@ -1,13 +1,16 @@
-# R-Data-Analysis-Project
+# **NYC Data Academy Project 2 - (Analyzing Suicide Rates to better understand Mental Health)
 
-**NYC Data Academy Project 2 - "to fill in later
+## Project Description
+Mental Health is rapidly growing worldwide and has in the past few years recently hit mainstream media.  I wanted to take a closer look into the suicide rates to see if there was a way to measure and quantify that growth and see which age group, gender, country/region are experiencing the most rapid growth.
 
-<brief description here>
-  
-- WSB daily data will contain data taken from WSB subreddit (these files are located in the 'WSB Data' directory)
-- YAHOO FINANCE DATA taken with scrapper built to take historical financial data (these files are located in the main 'Project 1' directory)
+## Goal
+Suicide prevention is a multi-sector issue.  It involves health care professionals, government welfare, politicans and expands all the way to patients, caregivers and family members.  I wanted to better understand the data presented to help visually represent this issue so that it could spread awareness to all these involved parties.
 
 ------------------------------------------------------------------------
+## Data
+Dataset was taken from Kaggle which was pulled from the World Bank, World Health Organization (WHO).
+
+<files, location, description>
 
 ## 'WSB Analysis.ipynb' (main directory)
 main code where all the analysis was done and charts were built
@@ -38,19 +41,3 @@ main code for pulling data from Yahoo Finance
 •	time_of_price: The time at which this price was reported on Yahoo Finance.
 
 Merged all these files and cleaned as 'WSB.csv'  This was the main data file used for the WallStreetBets' portion. (obtained these from Alex)
-
-------------------------------------------------------------------------
-
-## 'GME.csv' & 'GME_volume20.csv' & 'GME_volume21.csv' in main 'Project 1' directory
-
-These files were taken from the yahoo finance scrapper
-
-(Description of the rows below:)
-
-•	Date: The day/month that the current data is from.
-•	Open: open price of the stock
-•	High: The intraday price max for that day/period of the stock
-•	Low: The intraday price min for that day/period of the stock
-•	Close: The closing price for that day/period
-•	Adj Close: Same as the closing price but adjusted for stock splits and similiar events
-•	Volume: Total amount of volume traded in that day/period
