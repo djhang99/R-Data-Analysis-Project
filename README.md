@@ -19,7 +19,7 @@ Dataset was taken from Kaggle
 #### sub-directory "../Data/master.csv"
 - contains the original data file taken from Kaggle
 
-(Description of the rows below)
+#### (Description of the rows below)
 
 - country: name of the country
 - year: the year the data was collected for
