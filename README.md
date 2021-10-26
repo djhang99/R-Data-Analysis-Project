@@ -24,7 +24,13 @@ contains the original data file taken from Kaggle
 - sex: gender (male or female)
 - age: age-group (5-14, 15-24, 25-34, 35-54, 55-74, 74+)
 - suicide_no: (the # of suicides)
-- population: 
+- population: population
+- suicides/100k pop: formula calculation for suicides / 100k of population
+- country-year: string format of country and year
+- HDI for year: Human Development Index
+- gdp_for_year ($): GDP for that year
+- gdp_per_capita (%): GDP per capita for that year
+- generation: generation classification (Generation X, Boomers, etc..)
 
 -----------------------------------------------------------------------
 ## Coding Files
