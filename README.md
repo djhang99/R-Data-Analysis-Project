@@ -18,11 +18,11 @@ Dataset was taken from Kaggle which was pulled from the World Bank, World Health
 #### ex:'20201228-stonks.csv' & 'combined.csv' & 'WSB.csv' in 'WSB Data' sub-directory
 (Description of the rows below:)
 
-•	ticker: The stock ticker.
-•	date: The day that the current data is from.
-•	url: The url of the stock on Yahoo Finance.
-•	num_mentions: The number of times the stock ticker was seen in any posts or comments for this day.
-•	pct_mentions: The number of mentions of this stock as a percentage of all stock ticker mentions for this day.
+- ticker: The stock ticker.
+- date: The day that the current data is from.
+- url: The url of the stock on Yahoo Finance.
+- num_mentions: The number of times the stock ticker was seen in any posts or comments for this day.
+- pct_mentions: The number of mentions of this stock as a percentage of all stock ticker mentions for this day.
 
 ------------------------------------------------------------------------
 ## Coding Files
