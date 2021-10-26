@@ -17,7 +17,7 @@ Dataset was taken from Kaggle
 ### Description of Data Files
 
 #### sub-directory "../Data/master.csv"
-contains the original data file taken from Kaggle
+- contains the original data file taken from Kaggle
 
 (Description of the rows below:)
 
