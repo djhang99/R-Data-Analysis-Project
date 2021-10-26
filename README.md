@@ -1,4 +1,4 @@
-# NYC Data Academy Project 2 - (Analyzing Suicide Rates to better understand Mental Health)
+# Analyzing Suicide Rates to better understand Mental Health
 
 ## Project Description
 Mental Health is rapidly growing worldwide and has in the past few years recently hit mainstream media.  I wanted to take a closer look into the suicide rates to see if there was a way to measure and quantify that growth and see which age group, gender, country/region are experiencing the most rapid growth.
