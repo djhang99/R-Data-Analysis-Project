@@ -8,8 +8,9 @@ Suicide prevention is a multi-sector issue.  It involves health care professiona
 
 ------------------------------------------------------------------------
 ## Data
-Dataset was taken from Kaggle which was pulled from the World Bank, World Health Organization (WHO).
+Dataset was taken from Kaggle
 - Time period = 1985-2016
+- Provided by: World Bank, World Health Organization (WHO)
 
 <files, location, description>
 
