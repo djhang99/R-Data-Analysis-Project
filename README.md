@@ -12,20 +12,21 @@ Dataset was taken from Kaggle
 - Time period = 1985-2016
 - Provided by: World Bank, World Health Organization (WHO)
 
-<files, location, description>
+### Description of Data Files
 
-### Description of '.csv' Files
+#### sub-directory "../Data/master.csv"
+contains the original data file taken from Kaggle
 
-#### ex:'20201228-stonks.csv' & 'combined.csv' & 'WSB.csv' in 'WSB Data' sub-directory
 (Description of the rows below:)
 
-- ticker: The stock ticker.
-- date: The day that the current data is from.
-- url: The url of the stock on Yahoo Finance.
-- num_mentions: The number of times the stock ticker was seen in any posts or comments for this day.
-- pct_mentions: The number of mentions of this stock as a percentage of all stock ticker mentions for this day.
+- country: name of the country
+- year: the year the data was collected for
+- sex: gender (male or female)
+- age: age-group (5-14, 15-24, 25-34, 35-54, 55-74, 74+)
+- suicide_no: (the # of suicides)
+- population: 
 
-------------------------------------------------------------------------
+-----------------------------------------------------------------------
 ## Coding Files
 - Done in R
 - Shiny App
