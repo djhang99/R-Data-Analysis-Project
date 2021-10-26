@@ -1,4 +1,6 @@
-# Analyzing Suicide Rates to better understand Mental Health
+# Analyzing Suicide Rates to better understand Mental Health 
+- Author: David Jhang
+- NYC Data Academy Project 2
 
 ## Project Description
 Mental Health is rapidly growing worldwide and has in the past few years recently hit mainstream media.  I wanted to take a closer look into the suicide rates to see if there was a way to measure and quantify that growth and see which age group, gender, country/region are experiencing the most rapid growth.
@@ -6,7 +8,7 @@ Mental Health is rapidly growing worldwide and has in the past few years recentl
 ## Goal
 Suicide prevention is a multi-sector issue.  It involves health care professionals, government welfare, politicans and expands all the way to patients, caregivers and family members.  I wanted to better understand the data presented to help visually represent this issue so that it could spread awareness to all these involved parties.
 
-------------------------------------------------------------------------
+
 ## Data
 Dataset was taken from Kaggle
 - Time period = 1985-2016
@@ -32,7 +34,6 @@ contains the original data file taken from Kaggle
 - gdp_per_capita (%): GDP per capita for that year
 - generation: generation classification (Generation X, Boomers, etc..)
 
------------------------------------------------------------------------
 ## Coding Files
 - Done in R
 - Shiny App
