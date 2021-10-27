@@ -1,0 +1,47 @@
+## import packages
+```{r}
+library(tidyverse)
+library(reshape2)
+```
+
+## set the working directory and read file
+```{r}
+knitr::opts_chunk$set(root.dir = normalizePath("C:/Users/David Jhang/Desktop/NYC Data Academy/Project 2/Data/"))
+df = read.csv("Data/master.csv",stringsAsFactors = FALSE)
+```
+
+## check for NAs
+```{r}
+colSums(is.na(df))
+```
+## checking column names and renaming for formatting issues
+```{r}
+colnames(df)
+
+df = df %>%
+  rename(country = `ï..country`,
+         num_suicides = suicides_no,
+         suicides_100k = suicides.100k.pop,
+         country_year = country.year,
+         hdi = HDI.for.year,
+         gdp = `gdp_for_year....`,
+         gdp_per_capita = `gdp_per_capita....`)
+
+```
+
+## Exploring the Dataset
+  - Need to convert the age from a range into categories
+  - Need to remove commas and turn gdp into an num
+```{r}
+str(df) #summary
+
+
+
+df$gdp <- as.numeric(gsub(",","",df$gdp)) #remove and convert gdp to numeric
+
+
+unique(df$age) #unique values
+head(df) #head
+
+```
+
