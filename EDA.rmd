@@ -1,0 +1,89 @@
+## import packages
+```{r}
+library(tidyverse)
+library(reshape2)
+library(ggplot2)
+```
+
+## set the working directory and read file
+```{r}
+knitr::opts_chunk$set(root.dir = normalizePath("C:/Users/David Jhang/Desktop/NYC Data Academy/Project 2/Data/"))
+df = read.csv("df.csv",stringsAsFactors = FALSE)
+```
+
+## Converting Factors
+  (haven't used but here if needed)
+  - converting some "categories" into factors
+  - year, sex, age, generation (all categories)
+```{r}
+
+df$country = sapply( (df$country),factor ) # converting country into factor
+df$sex = sapply( (df$sex), factor ) # converting sex into factor
+df$age = sapply( (df$age), factor ) # converting sex into factor
+df$generation = sapply( (df$generation), factor ) # converting sex into factor
+
+```
+
+
+## Explore Data Section
+  - just a list of tools I will use
+```{r}
+glimpse(df)
+str(df) #summary
+head(df) #head
+unique(df$suicides_100k) #unique values countries
+sapply(df, class) #check class
+nrow(df) #how many rows
+
+```
+
+## Graphs 1
+  - countries vs suicide per population (100k)
+```{r}
+
+# can't use mean of suicides_100k since this is all weighted by population
+graph1 = df %>%
+  group_by(country, region) %>%
+  summarise(suicide100k = sum(num_suicides) / sum(population) * 100000)
+  
+graph1
+
+ggplot(graph1, aes(x=reorder(country, suicide100k), y=suicide100k, fill=region)) +
+  geom_bar(stat="identity") +
+  scale_fill_manual("Region", values = c("East Asia & Pacific"="#cd7058",
+                                         "Europe & Central Asia"="#599ad3",
+                                         "Latin America & Carribbean" = "#727272",
+                                         "Middle East & North Africa" = "#79c36a",
+                                         "North America" = "#9e66ab",
+                                         "Sub-Saharan Africa" = "#f9a65a")) +
+  labs(title = "Suicides from 2002-2015", x = "Country", y = "Suicides (100k)") +
+  coord_flip() 
+
+```
+## Graphs 2
+  - countries vs suicide per population (100k)
+```{r}
+
+graph1 = df %>%
+  group_by(country, region) %>%
+  summarise(suicide100k = sum(num_suicides) / sum(population) * 100000)
+  
+graph1
+
+ggplot(graph1, aes(x=reorder(country, suicide100k), y=suicide100k, fill=region)) +
+  geom_col(fill="#0099f9") +
+  geom_bar(stat="identity") +
+  scale_fill_manual("Region", values = c("East Asia & Pacific"="#cd7058",
+                                         "Europe & Central Asia"="#599ad3",
+                                         "Latin America & Carribbean" = "#f1595f",
+                                         "Middle East & North Africa" = "#79c36a",
+                                         "North America" = "#9e66ab",
+                                         "Sub-Saharan Africa" = "#f9a65a")) +
+  labs(title = "Suicides from 2002-2015", x = "Country", y = "Suicides (100k)") +
+  coord_flip() 
+
+
+
+```
+
+

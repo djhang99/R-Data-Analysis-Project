@@ -11,37 +11,114 @@ df = read.csv("Data/master.csv",stringsAsFactors = FALSE)
 ```
 
 ## check for NAs
+- What is HDI? (seems like a lot of missing data, removing for that reason)
 ```{r}
 colSums(is.na(df))
+sum(is.na(df$HDI.for.year)) #19456 NAs.. remove
+df$HDI.for.year = NULL
+
 ```
+
 ## checking column names and renaming for formatting issues
 ```{r}
-colnames(df)
-
 df = df %>%
   rename(country = `ï..country`,
          num_suicides = suicides_no,
          suicides_100k = suicides.100k.pop,
-         country_year = country.year,
-         hdi = HDI.for.year,
+         key = country.year,
          gdp = `gdp_for_year....`,
          gdp_per_capita = `gdp_per_capita....`)
+
+glimpse(df)
+
+```
+## Check data integrity
+- The data is shown with an age group (6 groups) and split genders (2) = 6*2
+- There should be 12 rows for each year
+- want to make sure there is any skewed data (missing gender or age groups)
+- remove anything that doesn't total 12
+```{r}
+df %>%
+  group_by(key) %>%
+  count() %>%
+  filter(n != 12)
+
+#looks like it's only 2016 that has this issue, remove
+df = df %>%
+  filter(year != 2016)
+
+```
+
+## Check the date range is okay to use
+- I noticed there was an issue that only a small # of countries provided data for the entire 1985-2015 period.
+- Wanted to include all major countries and make sure a good # of countries were provided for the entire analysis
+- I decided to choose the year range of 2002-2015 which included 52 countries out of the 101
+```{r}
+#check all the country values
+unique(df$country)
+
+#this will only keep data with year from 2000-2015
+df = df %>%
+  filter( between(year,2002,2015) )
+unique(df$year) #checks to make sure the filter worked correctly
+
+# 16 years * 12 rows for each year = 192 .. created variable n for this
+df = df %>%
+  group_by(country) %>%
+  mutate(count=n())
+
+# delete any countries that does not have 192
+df = df %>% 
+  filter( count == 168)
+
+# delete the count column
+df$count = NULL
+
+#check to see data is okay
+df %>%
+  group_by(country) %>%
+  summarize(n = n(), years = n / 12) %>%
+  arrange(years)
 
 ```
 
 ## Exploring the Dataset
-  - Need to convert the age from a range into categories
+  - Need to clean "years" from $age and also white spaces
   - Need to remove commas and turn gdp into an num
 ```{r}
-str(df) #summary
 
-
+df = df %>% 
+  mutate(age = str_remove(age,"years")) #remove yeaqrs
+df = df %>% 
+  mutate(age = str_remove(age," ")) #remove whitespaces
 
 df$gdp <- as.numeric(gsub(",","",df$gdp)) #remove and convert gdp to numeric
 
+```
 
-unique(df$age) #unique values
-head(df) #head
+## Found a way to enter Region Code into my dataset
+- could be useful to group by region later
+```{r}
+
+library(countrycode) #package to convert country codes
+?codelist # needed to match the origin and the destination
+
+#takes country column and uses that to reference and find a continent
+df = df %>% 
+  mutate(region = countrycode(sourcevar = country, 
+                              origin = "country.name",
+                              destination = "region"))
+
+glimpse(df) #check the types
+unique(df$country) #52 countries
+unique(df$year) #2002-2015 year range
+unique(df$region) #6 regions now
+
+```
+
+## Writing cleaned dataframe into .csv format
+```{r}
+write.csv(df, "df.csv", row.names=TRUE)
 
 ```
 
