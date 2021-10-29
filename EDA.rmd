@@ -3,6 +3,8 @@
 library(tidyverse)
 library(reshape2)
 library(ggplot2)
+library(hrbrthemes)
+library(car)
 ```
 
 ## set the working directory and read file
@@ -35,6 +37,15 @@ unique(df$suicides_100k) #unique values countries
 sapply(df, class) #check class
 nrow(df) #how many rows
 
+
+summary(df)
+
+
+# trying to find some correlation to do some bivariate analysis
+# believe that GDP might be a good stat to test against num of suicides or suicides_100k
+correlationsubset <- df[c("num_suicides", "population", "suicides_100k", "gdp", "gdp_per_capita")]
+cor(correlationsubset, use="complete.obs") #looks independent
+
 ```
 
 ## Graphs 1
@@ -50,38 +61,129 @@ graph1
 
 ggplot(graph1, aes(x=reorder(country, suicide100k), y=suicide100k, fill=region)) +
   geom_bar(stat="identity") +
+  geom_hline(yintercept = mean(graph1$suicide100k), color="red", linetype = "dotted") +
   scale_fill_manual("Region", values = c("East Asia & Pacific"="#cd7058",
                                          "Europe & Central Asia"="#599ad3",
-                                         "Latin America & Carribbean" = "#727272",
+                                         "Latin America & Caribbean" = "#727272",
                                          "Middle East & North Africa" = "#79c36a",
                                          "North America" = "#9e66ab",
                                          "Sub-Saharan Africa" = "#f9a65a")) +
   labs(title = "Suicides from 2002-2015", x = "Country", y = "Suicides (100k)") +
-  coord_flip() 
+  coord_flip()
 
 ```
 ## Graphs 2
-  - countries vs suicide per population (100k)
+  - By gender and continent
 ```{r}
 
-graph1 = df %>%
-  group_by(country, region) %>%
+graph2 = df %>%
+  group_by(sex, region) %>%
   summarise(suicide100k = sum(num_suicides) / sum(population) * 100000)
   
-graph1
+graph2
 
-ggplot(graph1, aes(x=reorder(country, suicide100k), y=suicide100k, fill=region)) +
-  geom_col(fill="#0099f9") +
+ggplot(graph2, aes(x=region, y=suicide100k, fill=sex)) +
+  geom_bar(stat="identity", position="dodge") +
+  labs(title = "Male/Female Suicides by Region (per 100k)", x = "Region", y = "Suicides (100k)")
+
+
+```
+
+## Graphs 3
+  - Proportion of male vs female suicides per country
+```{r}
+
+test = df %>%
+  group_by(country, sex) %>%
+  summarise(split  = sum(num_suicides))
+
+all_suicides = df %>%
+  group_by(country) %>%
+  summarise(all_suicides=sum(num_suicides))
+
+test
+all_suicides
+
+graph3 = test %>%
+  left_join(all_suicides, by = c('country'='country'))
+
+graph3 = graph3 %>%
+  group_by(country, sex) %>%
+  summarise(ratio = split/all_suicides)
+
+graph3 = graph3 %>%
+  group_by(sex,ratio) %>% 
+  arrange(desc(sex))
+
+graph3
+
+ggplot(graph3, aes(x=country, y=ratio, fill=sex)) +
   geom_bar(stat="identity") +
-  scale_fill_manual("Region", values = c("East Asia & Pacific"="#cd7058",
-                                         "Europe & Central Asia"="#599ad3",
-                                         "Latin America & Carribbean" = "#f1595f",
-                                         "Middle East & North Africa" = "#79c36a",
-                                         "North America" = "#9e66ab",
-                                         "Sub-Saharan Africa" = "#f9a65a")) +
-  labs(title = "Suicides from 2002-2015", x = "Country", y = "Suicides (100k)") +
-  coord_flip() 
+  labs(title = "Suicides from 2002-2015", x = "Country", y = "Ratio by Gender") +
+  coord_flip()
 
+
+```
+## Graphs 4
+  - By age group 
+  (wanted to do country but graph might be too big so will do it by continent)
+```{r}
+
+graph4 =df %>%
+  group_by(age, region) %>%
+  summarise(suicide100k = sum(num_suicides) / sum(population) * 100000)
+
+graph4
+
+ggplot(graph4, aes(x=region, y=suicide100k, fill=age)) +
+  geom_bar(stat="identity", position="dodge") +
+  scale_fill_manual("Age", values = c("15-24"="paleturquoise1",
+                                         "25-34"="lightsteelblue1",
+                                         "35-54" = "steelblue1",
+                                         "5-14" = "royalblue2",
+                                         "55-74" = "steelblue3",
+                                         "75+" = "steelblue4")) +  
+  labs(title = "Suicides by Age Group", x = "Country", y = "Suicides (100k)")
+
+```
+
+
+#Graph 5 - Suicide by Year (by Generation)
+- no real trends here
+```{r}
+
+graph5 = df %>%
+  group_by(generation, year) %>%
+  summarise(suicide100k = sum(num_suicides) / sum(population) * 100000)
+
+graph5
+
+ggplot(graph5, aes(year, suicide100k, group=generation, colour=generation, fill=generation)) + 
+  geom_point(shape=21, size=3) +
+  geom_line() +
+  labs(title = "Yearly Suicide Rates by Age Group", x = "Year", y = "Suicides (100k)")
+
+```
+#Graph 6 - Graphing a scatter by year grouped by Country
+- would like to do 
+```{r}
+
+df %>%
+  mutate(suicides.pop = num_suicides/population * 100)
+
+
+graph6 = df %>%
+  group_by(country, year) %>%
+  summarise(yearly_suicides = sum(num_suicides))
+
+graph6 %>%
+  
+
+ggplot(graph6, aes(year, yearly_suicides, group=country, colour=country, fill=country)) + 
+  geom_point(shape=21, size=3) +
+  geom_line() +
+  labs(title = "Yearly Suicide Rates by Age Group", x = "Year", y = "Suicides (100k)") + 
+  theme(legend.position = "bottom")
 
 
 ```

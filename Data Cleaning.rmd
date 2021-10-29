@@ -2,6 +2,7 @@
 ```{r}
 library(tidyverse)
 library(reshape2)
+library(countrycode) #package to convert country codes
 ```
 
 ## set the working directory and read file
@@ -100,7 +101,6 @@ df$gdp <- as.numeric(gsub(",","",df$gdp)) #remove and convert gdp to numeric
 - could be useful to group by region later
 ```{r}
 
-library(countrycode) #package to convert country codes
 ?codelist # needed to match the origin and the destination
 
 #takes country column and uses that to reference and find a continent
@@ -118,7 +118,7 @@ unique(df$region) #6 regions now
 
 ## Writing cleaned dataframe into .csv format
 ```{r}
-write.csv(df, "df.csv", row.names=TRUE)
+write.csv(df, "df.csv", row.names=FALSE)
 
 ```
 
