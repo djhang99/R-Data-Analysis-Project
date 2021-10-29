@@ -33,14 +33,15 @@ Dataset was taken from Kaggle
 - gdp_for_year ($): GDP for that year
 - gdp_per_capita (%): GDP per capita for that year
 - generation: generation classification (Generation X, Boomers, etc..)
+- region: taken from "countrycode" package which I pulled in to split the countries by UN region mapping
 
 ## Coding Files
 - Done in R
 - Shiny App
 
-#### 'WSB Analysis.ipynb' (main directory)
+#### 'EDA.rmd' (main directory)
 main code where all the analysis was done and charts were built
-#### 'Data Cleaning.ipynb' (WSB Data - subdirectory)
+#### 'Data Cleaning.rmd' (Data - subdirectory)
 main code for cleaning the WSB data files
-#### 'Data Scraping Yahoo Finance Historical Stock Data.ipynb' (main directory)
-main code for pulling data from Yahoo Finance
+#### 'ui.R', 'server.R', 'app.R' (Shiny - subdirectory)
+all codes pertaining to the Shiny app
