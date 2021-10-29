@@ -1,7 +1,6 @@
 ## import packages
 ```{r}
 library(tidyverse)
-library(reshape2)
 library(countrycode) #package to convert country codes
 ```
 
