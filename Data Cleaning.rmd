@@ -67,7 +67,7 @@ df = df %>%
   group_by(country) %>%
   mutate(count=n())
 
-# delete any countries that does not have 192
+# delete any countries that does not have 168
 df = df %>% 
   filter( count == 168)
 

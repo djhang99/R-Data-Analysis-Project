@@ -4,6 +4,10 @@ library(tidyverse)
 library(reshape2)
 library(ggplot2)
 library(hrbrthemes)
+library(ggalt)
+library(ggpubr)
+library(gridExtra)
+library(grid)
 ```
 
 ## set the working directory and read file
@@ -11,20 +15,6 @@ library(hrbrthemes)
 knitr::opts_chunk$set(root.dir = normalizePath("C:/Users/David Jhang/Desktop/NYC Data Academy/Project 2/Data/"))
 df = read.csv("df.csv",stringsAsFactors = FALSE)
 ```
-
-## Converting Factors
-  (haven't used but here if needed)
-  - converting some "categories" into factors
-  - year, sex, age, generation (all categories)
-```{r}
-
-df$country = sapply( (df$country),factor ) # converting country into factor
-df$sex = sapply( (df$sex), factor ) # converting sex into factor
-df$age = sapply( (df$age), factor ) # converting sex into factor
-df$generation = sapply( (df$generation), factor ) # converting sex into factor
-
-```
-
 
 ## Explore Data Section
   - just a list of tools I will use
@@ -36,10 +26,7 @@ sapply(df, class) #check class
 nrow(df) #how many rows
 
 
-
 summary(df)
-
-
 
 
 # trying to find some correlation to do some bivariate analysis
@@ -68,7 +55,80 @@ ggplot(graph0, aes(x = year, y = ratio, color= ratio)) +
   geom_line() +
   labs(title = "Global suicide rates over the years", x = "Year", y = "Suicides (100k)")
 
+# conclusion = suicide rates are going down globally, most likely not for each country
+
 ```
+## Graph0A
+- standard deviation graph of each country from 2002-2005
+```{r}
+
+# creating new df for each country of total suicides/100k that year
+test = df %>%
+  group_by(year, country) %>%
+  summarise(total_suicides = sum(num_suicides), total_pop =sum(population))
+test = test %>%
+  group_by(year, country) %>%
+  summarise(suicides100k = (total_suicides/total_pop) * 100000)
+
+test2002 = test %>%
+  filter(year == 2002)
+test2003 = test %>%
+  filter(year == 2002)
+test2004 = test %>%
+  filter(year == 2002)
+test2005 = test %>%
+  filter(year == 2002)
+test2006 = test %>%
+  filter(year == 2002)
+test2007 = test %>%
+  filter(year == 2002)
+test2008 = test %>%
+  filter(year == 2002)
+test2009 = test %>%
+  filter(year == 2002)
+test2010 = test %>%
+  filter(year == 2002)
+test2011 = test %>%
+  filter(year == 2002)
+test2012 = test %>%
+  filter(year == 2002)
+test2013 = test %>%
+  filter(year == 2002)
+test2014 = test %>%
+  filter(year == 2002)
+test2015 = test %>%
+  filter(year == 2015)
+
+test1= test2002 %>%
+  left_join(test2003, by = "country") %>%
+  rename("suicides2002" = "suicides100k.x", "suicides2003" = "suicides100k.y")
+test1$year.x = NULL
+test1$year.y = NULL
+
+# iterate this by each year to pull each suicide100k into a seperate column
+# need to change the column name by year and the dataset by year
+test1= test1 %>%
+  left_join(test2015, by = "country") %>%
+  rename("suicides2015" = "suicides100k")
+test1$year=NULL
+
+#creating a new df with all the columns
+test_final = test1
+
+#run SD by row and create new column to graph
+test_final = transform(test_final, SD=apply(test_final,1, sd, na.rm = TRUE))
+test_final
+
+ggplot(test_final, aes(x=reorder(country, SD), y=SD)) +
+  geom_bar(stat="identity", fill="steelblue") +
+  geom_hline(yintercept = mean(test_final$SD), color="red", linetype = "dotted") +
+ labs(title = "Standard Deviation of Suicides (100k) by Country", x = NULL, y = "Standard Deviation") +
+  coord_flip()
+
+#would expect this because I assume that some years would be good years or bad years would elevate suicides (financial crisis)
+
+```
+
 
 ## Graphs 1
   - countries vs suicide per population (100k)
@@ -93,30 +153,32 @@ ggplot(graph1, aes(x=reorder(country, suicide100k), y=suicide100k, fill=region))
   labs(title = "Suicides from 2002-2015", x = "Country", y = "Suicides (100k)") +
   coord_flip()
 
+# top/least suicide rates by country
+
 ```
 ## Graphs 2
   - By gender and continent
 ```{r}
 
+# new df by gender and suicide 100k
 graph2 = df %>%
   group_by(sex, region) %>%
   summarise(suicide100k = sum(num_suicides) / sum(population) * 100000)
   
-graph2
-
+#dodge to show the diference between male vs female
 ggplot(graph2, aes(x=region, y=suicide100k, fill=sex)) +
   geom_bar(stat="identity", position="dodge") +
   labs(title = "Male/Female Suicides by Region (per 100k)", x = "Region", y = "Suicides (100k)")
 
-```
-```{r}
+# appears that males commit suicide more than females
 
 ```
-
 ## Graphs 3
+  - wanted to visualize the ratio since from graph 2 it appeared that males have higher risk to suicide
   - Proportion of male vs female suicides per country
 ```{r}
 
+# creating column to create a ratio between genders
 test = df %>%
   group_by(country, sex) %>%
   summarise(split  = sum(num_suicides))
@@ -125,66 +187,107 @@ all_suicides = df %>%
   group_by(country) %>%
   summarise(all_suicides=sum(num_suicides))
 
+#checking new columns
 test
 all_suicides
 
+# join the 2 new columns by country
 graph3 = test %>%
   left_join(all_suicides, by = c('country'='country'))
 
+# now trying to find the male ratio so we can group by in the graph
 graph3 = graph3 %>%
   group_by(country, sex) %>%
   summarise(ratio = split/all_suicides)
 
-graph3 = graph3 %>%
-  group_by(sex,ratio) %>% 
-  arrange(desc(sex))
+graph3a = graph3 %>%
+  pivot_wider(country, names_from=sex, values_from=ratio) %>%
+  mutate(gender_ratio = male/female)
 
-graph3
-
-ggplot(graph3, aes(x=country, y=ratio, fill=sex)) +
+#actual graph  
+graph3a %>%
+  left_join(graph3, by="country") %>%
+  ggplot(aes(x=reorder(country, gender_ratio), y=ratio, fill=sex)) +
   geom_bar(stat="identity") +
   labs(title = "Suicides from 2002-2015", x = "Country", y = "Ratio by Gender") +
   coord_flip()
 
+#conclusion = males typically are higher risk to suicides
 
 ```
+## Graph4a
+  - Wanted to show which age group had the highest.  Hunch that the elderly have a higher suicide rate
+```{r}
+
+#new df for age group analysis
+graph4a = df %>%
+  group_by(age) %>%
+  summarise(suicide100k = sum(num_suicides) / sum(population) * 100000) %>%
+  arrange(desc(suicide100k))
+
+graph4a
+
+#factorizing age to sort when charting
+graph4a$age = factor(graph4a$age, levels=c("5-14","15-24","25-34","35-54","55-74","75+"))
+
+ggplot(graph4a, aes(x=age, y=suicide100k, fill=age)) +
+  geom_bar(stat="identity") +
+  scale_fill_manual("Age", values = c("5-14" = "royalblue2",
+                                      "15-24"="paleturquoise1",
+                                      "25-34"="lightsteelblue1",
+                                      "35-54" = "steelblue1",
+                                      "55-74" = "steelblue3",
+                                      "75+" = "steelblue4")) +  
+  labs(title = "Suicides by Age Group", x = "Age Group", y = "Suicides (100k)")
+
+## conclusion = elderly has the highest suicide rate, sad to see but trends upwards
+
+```
+
+
 ## Graphs 4
   - By age group 
   (wanted to do country but graph might be too big so will do it by continent)
 ```{r}
 
+#this time wanted to add region to the df
 graph4 =df %>%
   group_by(age, region) %>%
-  summarise(suicide100k = sum(num_suicides) / sum(population) * 100000)
+  summarise(suicide100k = sum(num_suicides) / sum(population) * 100000) %>%
+  arrange(age)
 
+
+#factorizing the age to help with sorting  when making a chart
+graph4$age = factor(graph4$age, levels=c("5-14","15-24","25-34","35-54","55-74","75+"))
 graph4
 
+# needed to change colors since it was too confusing to view but wanted to show them with dodge(side-by-side)
 ggplot(graph4, aes(x=region, y=suicide100k, fill=age)) +
   geom_bar(stat="identity", position="dodge") +
-  scale_fill_manual("Age", values = c("15-24"="paleturquoise1",
-                                         "25-34"="lightsteelblue1",
-                                         "35-54" = "steelblue1",
-                                         "5-14" = "royalblue2",
-                                         "55-74" = "steelblue3",
-                                         "75+" = "steelblue4")) +  
+  scale_fill_manual("Age", values = c("5-14" = "royalblue2",
+                                      "15-24"="paleturquoise1",
+                                      "25-34"="lightsteelblue1",
+                                      "35-54" = "steelblue1",
+                                      "55-74" = "steelblue3",
+                                      "75+" = "steelblue4")) +  
   labs(title = "Suicides by Age Group", x = "Country", y = "Suicides (100k)")
 
-```
-```{r}
+#conclusion, Asia appears to have an issue with suicide
 
 ```
-
 
 #Graph 5 - Suicide by Year (by Generation)
 - no real trends here
 ```{r}
 
+#creating new df for generation analysis vs suicides per 100k
 graph5 = df %>%
   group_by(generation, year) %>%
   summarise(suicide100k = sum(num_suicides) / sum(population) * 100000)
 
 graph5
 
+#doing an overlay to show it all on one chart
 ggplot(graph5, aes(year, suicide100k, group=generation, colour=generation, fill=generation)) + 
   geom_point(shape=21, size=3) +
   geom_line() +
@@ -192,8 +295,140 @@ ggplot(graph5, aes(year, suicide100k, group=generation, colour=generation, fill=
 
 
 ```
-#Graph 6 - Graphing a scatter by year grouped by Country
-- would like to do 
+#Graph 6
+- Diverging Bars graph representing the % change from 2002 vs. 2015
+```{r}
+
+# getting data from 2002 and 2015 to see the % change of suicides
+test = df %>%
+  group_by(year, country) %>%
+  summarise(total_suicides = sum(num_suicides), total_pop =sum(population))
+test = test %>%
+  group_by(year, country) %>%
+  summarise(suicides100k = (total_suicides/total_pop) * 100000)
+
+test2002 = test %>%
+  filter(year == 2002)
+test2015 = test %>%
+  filter(year == 2015)
+
+test1= test2002 %>%
+  left_join(test2015, by = "country") %>%
+  rename("suicides2002" = "suicides100k.x", "suicides2015" = "suicides100k.y")
+test1$year.x = NULL
+test1$year.y = NULL
+test1
+
+
+graph6 = test1 %>%
+  group_by(country, suicides2002, suicides2015) %>%
+  summarise(change = ((suicides2015 - suicides2002) / suicides2002) * 100) %>%
+  arrange(change)
+
+## Grenada had 0 in 2002 and 2015 so that's why it's empty.  Population of 112k
+
+graph6
+
+
+ggplot(graph6, aes(reorder(x=country,change), y=change, col = change)) + 
+  geom_point(stat='identity', size = 4) +
+  geom_hline(yintercept = 0, col = "grey", size = 1) +
+  scale_color_gradient(low = "tomato", high = "royalblue") +
+  geom_segment(aes(y = 0, 
+                   x = country, 
+                   yend = change, 
+                   xend = country), size = 1) +
+  labs(title="% Change of Suicides", 
+       x = NULL, y = "% change in suicides per 100k (2002 vs 2015)") +
+  scale_y_continuous(breaks = seq(-80, 80, 10), limits = c(-80, 80)) +
+  theme_gray(base_size=14) +
+  theme(legend.position = "none") +
+  coord_flip()
+```
+
+Graph 6a:
+- first, trying to make a df with average gdp(capita) and total_suicides
+- then run correlation to see which countries have the highest and lowest rates of suicide every year
+```{r}
+
+#creating df with average of gdp and # suicides
+corr = df %>%
+  group_by(country, year) %>%
+  summarise(gdp_per_capita = mean(gdp_per_capita), total_suicides=round(sum(num_suicides),2))
+
+#found a way to basically run correlation for every year for both gdp and suicides
+# this represents countries that are getting richer over the years and increasing # of suicides
+corr1 = corr %>%
+  group_by(country) %>%
+  summarise(gdp_corr = cor(year, gdp_per_capita), suicides_corr = cor(year, total_suicides)) %>%
+  arrange(desc(suicides_corr))
+
+#USE THIS FOR PRESENTATION
+#so basically this is saying every year as people were getting wealthier on average.. there was a increase in suicides every year
+corr1 
+
+ggplot(corr1, aes(reorder(x=country,suicides_corr), y=suicides_corr, col = gdp_corr)) + 
+  geom_point(stat='identity', size = 4) +
+  geom_hline(yintercept = 0, col = "grey", size = 1) +
+  scale_color_gradient(low = "tomato", high = "royalblue") +
+  geom_segment(aes(y = 0, 
+                   x = country, 
+                   yend = suicides_corr, 
+                   xend = country), size = 1) +
+  labs(title="Correlation of Total Suicides (per Year)", 
+       x = NULL, y = "correlation") +
+  scale_y_continuous(breaks = seq(-1, 0, 1), limits = c(-1, 1)) +
+  theme_gray(base_size=14) +
+  theme(legend.position = "none") +
+  coord_flip()
+
+```
+
+#Graph 7: GDP vs Suicides
+Does countries with higher GDP have less suicides?
+```{r}
+
+#creating new df for GDP vs Suicide analysis
+# mean of gdp_per_capita should hold the value of gdp since its the same value for each year
+test = df %>%
+  group_by(year, country) %>%
+  summarise(suicides = sum(num_suicides), population = sum(population), gdp_per_capita=mean(gdp_per_capita))
+
+graph7 = test %>%
+  group_by(year,country, gdp_per_capita) %>%
+  summarise(suicides100k = (suicides/population) * 100000)
+
+ggplot() +
+  geom_point(data = graph7,aes(x = gdp_per_capita, y = suicides100k, colour = country)) +
+  labs(title = "Average suicides (100k) vs. GDP (capita) yearly by Country ", x = "GDP (capita)", y = "Suicides (100k)") +
+  theme_gray(base_size=14) +
+  theme(legend.position = "none") +
+  xlim(0,80000)
+
+#too noisy.. yearly may not be the best option here
+
+```
+# Graph 7a
+- Instead of year let's just do it by region
+```{r}
+#this time just group by country and region and should give the mean of that period
+graph7a = df %>%
+  group_by(country, region) %>%
+  summarize(suicides100k = sum(num_suicides) / sum(population) * 100000, 
+            gdp_per_capita = mean(gdp_per_capita))
+graph7a
+
+ggplot() +
+  geom_point(data = graph7a,aes(x = gdp_per_capita, y = suicides100k, colour = region)) +
+  theme_gray(base_size=14) +
+  labs(title = "Average suicides (100k) vs. GDP (capita) from 2002-2015 ", x = "GDP (capita)", y = "Suicides (100k)") +
+  geom_line(data = data.frame(x=c(0,100000),y=c(0,40)),aes(x=x, y=y), colour='red')
+
+
+```
+
+## Now we choose the US since it had the highest correlation and then want to do linear regression on 
+#Graph 8
 ```{r}
 
 df %>%
@@ -201,17 +436,16 @@ df %>%
 
 
 graph6 = df %>%
-  group_by(region, year) %>%
+  group_by(country, year) %>%
   summarise(yearly_suicides = sum(num_suicides))
 
 graph6
 
-ggplot(graph6, aes(year, yearly_suicides, group=region, colour=region, fill=region)) + 
+ggplot(graph6, aes(year, yearly_suicides, group=country, colour=country, fill=country)) + 
   geom_point(shape=21, size=3) +
   geom_line() +
   labs(title = "Yearly Suicide Rates by Age Group", x = "Year", y = "Suicides (100k)") + 
   theme(legend.position = "bottom")
-
 
 ```
 
