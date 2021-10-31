@@ -16,25 +16,6 @@ knitr::opts_chunk$set(root.dir = normalizePath("C:/Users/David Jhang/Desktop/NYC
 df = read.csv("df.csv",stringsAsFactors = FALSE)
 ```
 
-## Explore Data Section
-  - just a list of tools I will use
-```{r}
-glimpse(df)
-str(df) #summary
-head(df) #head
-sapply(df, class) #check class
-nrow(df) #how many rows
-
-
-summary(df)
-
-
-# trying to find some correlation to do some bivariate analysis
-# believe that GDP might be a good stat to test against num of suicides or suicides_100k
-correlationsubset <- df[c("num_suicides", "population", "suicides_100k", "gdp", "gdp_per_capita")]
-cor(correlationsubset, use="complete.obs") #looks independent
-
-```
 ## Graph 0
 ```{r}
 
@@ -105,8 +86,10 @@ test1= test2002 %>%
 test1$year.x = NULL
 test1$year.y = NULL
 
-# iterate this by each year to pull each suicide100k into a seperate column
-# need to change the column name by year and the dataset by year
+
+#### NEED TO RUN THIS FOR EACH YEAR ##### test2003, test2004, etc..
+# iterate this by each year to pull each suicide100k into a separate column
+# change test2015 and suicides2015 respectively
 test1= test1 %>%
   left_join(test2015, by = "country") %>%
   rename("suicides2015" = "suicides100k")
@@ -122,7 +105,7 @@ test_final
 ggplot(test_final, aes(x=reorder(country, SD), y=SD)) +
   geom_bar(stat="identity", fill="steelblue") +
   geom_hline(yintercept = mean(test_final$SD), color="red", linetype = "dotted") +
- labs(title = "Standard Deviation of Suicides (100k) by Country", x = NULL, y = "Standard Deviation") +
+  labs(title = "Standard Deviation of Suicides (100k) by Country", x = NULL, y = "Standard Deviation") +
   coord_flip()
 
 #would expect this because I assume that some years would be good years or bad years would elevate suicides (financial crisis)
@@ -426,7 +409,6 @@ ggplot() +
   theme_gray(base_size=14) +
   labs(title = "Average suicides (100k) vs. GDP (capita) from 2002-2015 ", x = "GDP (capita)", y = "Suicides (100k)")
 
-
 ```
 
 ## Now we choose the US since it had the highest correlation and then want to do linear regression on 
@@ -470,22 +452,8 @@ ggplot(us, aes(x = total_suicides, y = gdp_per_capita, color= total_suicides)) +
   theme(legend.position = "none")
 
 ```
-
-Regression Attempt
-```{r}
-
-#low correlation, might be a fit for linear regression
-correlationsubset <- corr[c("total_suicides", "gdp_per_capita")]
-cor(correlationsubset, use="complete.obs") #looks independent
-
-hist(corr$gdp_per_capita)
-hist(corr$total_suicides)
-
-model1 = lm(total_suicides~gdp_per_capita, data=corr)
-summary(model1)
-
-```
-
+#Graph 10
+- M/F split for US
 ```{r}
 
 # create new DF for just US to try linear regression for US only
@@ -519,11 +487,4 @@ ggplot(df2, aes(x = age, y = yearly_suicides, fill = age)) +
     labs(title = "Yearly Suicides in the US by Age Group", x = "Age Group", y = "# of suicides (yearly)") +
     theme_classic()
 
-hist(corr$gdp_per_capita)
-hist(corr$total_suicides)
-
-#an attempt at ANOVA
-anova1 = aov(yearly_suicides~age, data=df2)
-summary(anova1)
 ```
-
