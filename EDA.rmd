@@ -210,6 +210,8 @@ graph3a %>%
   ggplot(aes(x=reorder(country, gender_ratio), y=ratio, fill=sex)) +
   geom_bar(stat="identity") +
   labs(title = "Suicides from 2002-2015", x = "Country", y = "Ratio by Gender") +
+  geom_hline(yintercept = mean(graph3a$male), color="blue", linetype = "dotted") +
+  geom_hline(yintercept = mean(graph3a$female), color="red", linetype = "dotted") +
   coord_flip()
 
 #conclusion = males typically are higher risk to suicides
@@ -358,6 +360,7 @@ corr = df %>%
 
 #found a way to basically run correlation for every year for both gdp and suicides
 # this represents countries that are getting richer over the years and increasing # of suicides
+
 corr1 = corr %>%
   group_by(country) %>%
   summarise(gdp_corr = cor(year, gdp_per_capita), suicides_corr = cor(year, total_suicides)) %>%
@@ -421,32 +424,106 @@ graph7a
 ggplot() +
   geom_point(data = graph7a,aes(x = gdp_per_capita, y = suicides100k, colour = region)) +
   theme_gray(base_size=14) +
-  labs(title = "Average suicides (100k) vs. GDP (capita) from 2002-2015 ", x = "GDP (capita)", y = "Suicides (100k)") +
-  geom_line(data = data.frame(x=c(0,100000),y=c(0,40)),aes(x=x, y=y), colour='red')
+  labs(title = "Average suicides (100k) vs. GDP (capita) from 2002-2015 ", x = "GDP (capita)", y = "Suicides (100k)")
 
 
 ```
 
 ## Now we choose the US since it had the highest correlation and then want to do linear regression on 
 #Graph 8
+- I selected the US, one of the top offenders, clearly meaningful for us to conceptualize
 ```{r}
 
-df %>%
-  mutate(suicides.pop = num_suicides/population * 100)
+# plotting yearly suicide increase over the past year in the US
+graph8 = df %>%
+  filter(country=="United States") %>%
+  group_by(year) %>%
+  summarise(yearly_suicides = sum(num_suicides), gdp_cap = mean(gdp_per_capita))
+graph8
 
-
-graph6 = df %>%
-  group_by(country, year) %>%
-  summarise(yearly_suicides = sum(num_suicides))
-
-graph6
-
-ggplot(graph6, aes(year, yearly_suicides, group=country, colour=country, fill=country)) + 
-  geom_point(shape=21, size=3) +
+# linear and positive
+ggplot(graph8, aes(x = year, y = yearly_suicides, color= yearly_suicides)) +
+  geom_point() +
   geom_line() +
-  labs(title = "Yearly Suicide Rates by Age Group", x = "Year", y = "Suicides (100k)") + 
-  theme(legend.position = "bottom")
+  xlim(2002,2016) +
+  labs(title = "Yearly Suicides in the US", x = "Year", y = "# of Suicides") + 
+  theme(legend.position = "none")
 
 ```
 
+#Graph9
+- over the years the total_suicides vs gdp_per_capita in the US
+```{r}
+corr
+# using the corr dataframe that I made that highlights gdp_per_cap and total_suicides every year, will select US and graph
+us = corr %>%
+  filter(country=="United States") %>%
+  group_by(year) 
+
+#will try a regression model on this one later
+cor(corr$gdp_per_capita,corr$total_suicides)
+
+ggplot(us, aes(x = total_suicides, y = gdp_per_capita, color= total_suicides)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "Yearly # of Suicides vs Yearly GDP (US)", x = "Yearly Suicides", y = "GDP (per capita)") +
+  theme(legend.position = "none")
+
+```
+
+Regression Attempt
+```{r}
+
+#low correlation, might be a fit for linear regression
+correlationsubset <- corr[c("total_suicides", "gdp_per_capita")]
+cor(correlationsubset, use="complete.obs") #looks independent
+
+hist(corr$gdp_per_capita)
+hist(corr$total_suicides)
+
+model1 = lm(total_suicides~gdp_per_capita, data=corr)
+summary(model1)
+
+```
+
+```{r}
+
+# create new DF for just US to try linear regression for US only
+df1 = df %>%
+  filter(country=="United States") %>%
+  group_by(year, sex) %>%
+  summarise(yearly_suicides = sum(num_suicides), yearly_pop= sum(population), gdp_cap=mean(gdp_per_capita))
+
+ggplot(df1, aes(x = sex, y = yearly_suicides, fill = sex)) +
+    geom_boxplot() +
+    geom_jitter(shape = 15,
+        color = "steelblue",
+        position = position_jitter(0.21)) +
+    labs(title = "Male vs Female Breakdown in the US", x = "Gender", y = "# of suicides (yearly)") +
+    theme_classic()
+
+```
+
+```{r}
+# create new DF for just US to try linear regression for US only
+df2 = df %>%
+  filter(country=="United States") %>%
+  group_by(year, age) %>%
+  summarise(yearly_suicides = sum(num_suicides), yearly_pop= sum(population), gdp_cap=mean(gdp_per_capita))
+
+ggplot(df2, aes(x = age, y = yearly_suicides, fill = age)) +
+    geom_boxplot() +
+    geom_jitter(shape = 15,
+        color = "steelblue",
+        position = position_jitter(0.21)) +
+    labs(title = "Yearly Suicides in the US by Age Group", x = "Age Group", y = "# of suicides (yearly)") +
+    theme_classic()
+
+hist(corr$gdp_per_capita)
+hist(corr$total_suicides)
+
+#an attempt at ANOVA
+anova1 = aov(yearly_suicides~age, data=df2)
+summary(anova1)
+```
 
