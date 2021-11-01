@@ -5,7 +5,7 @@ account: djhang
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 5011671
-bundleId: 5196221
+bundleId: 5196802
 url: https://djhang.shinyapps.io/shiny/
-when: 1635710367.70816
-lastSyncTime: 1635710367.70816
+when: 1635729081.21417
+lastSyncTime: 1635729081.21417

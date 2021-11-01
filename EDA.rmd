@@ -105,6 +105,7 @@ test_final
 ggplot(test_final, aes(x=reorder(country, SD), y=SD)) +
   geom_bar(stat="identity", fill="steelblue") +
   geom_hline(yintercept = mean(test_final$SD), color="red", linetype = "dotted") +
+  theme_gray(base_size=14) +
   labs(title = "Standard Deviation of Suicides (100k) by Country", x = NULL, y = "Standard Deviation") +
   coord_flip()
 
@@ -469,6 +470,10 @@ ggplot(df1, aes(x = sex, y = yearly_suicides, fill = sex)) +
         position = position_jitter(0.21)) +
     labs(title = "Male vs Female Breakdown in the US", x = "Gender", y = "# of suicides (yearly)") +
     theme_classic()
+
+ggplot(df1, aes(x=year, y=yearly_suicides, fill=sex)) + 
+  geom_bar(stat="identity", position=position_dodge()) +
+  labs(title = "Male vs Female Breakdown in the US", x = "Year", y = "# of suicides")
 
 ```
 
