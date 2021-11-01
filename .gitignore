@@ -78,3 +78,8 @@ Thumbs.db
 
 #data files
 *.csv
+
+#images
+*.png
+*.jpg
+
