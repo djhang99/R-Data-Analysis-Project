@@ -77,4 +77,4 @@ ehthumbs.db
 Thumbs.db
 
 #data files
-.csv
+*.csv
